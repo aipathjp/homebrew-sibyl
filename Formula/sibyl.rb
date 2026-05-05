@@ -1,10 +1,10 @@
 class Sibyl < Formula
-  desc "Sibyl: AI-Path 株式会社の AI セッション記録 + Claude Code/Codex 自然言語起動"
+  desc "Sibyl: AI-Path 株式会社の AI セッション記録 + Claude Code/Codex 自然言語起動 + sib CLI"
   homepage "https://github.com/aipathjp/aipsibyl"
-  url "https://github.com/aipathjp/sibyl-dist/releases/download/v0.1.3/sibyl-0.1.3.tar.gz"
-  sha256 "3632e47570ff70e1928c92a8eded2957231ba6f02bfa606dc49eaf5f7d5a7a27"
+  url "https://github.com/aipathjp/sibyl-dist/releases/download/v0.2.0/sibyl-0.2.0.tar.gz"
+  sha256 "8c836766b1c1550df84d77ef46e6d2c255a1c6de59c03c30a266d29588d20cfa"
   license "Proprietary"
-  version "0.1.3"
+  version "0.2.0"
 
   depends_on "python@3.12"
 
@@ -12,6 +12,7 @@ class Sibyl < Formula
     bin.install "bin/sibyl-record"
     bin.install "bin/sibyl-log-session"
     bin.install "bin/sibyl-install"
+    bin.install "bin/sib"
     pkgshare.install "skills/sibyl-record/SKILL.md"
     pkgshare.install "skills/sibyl-record/codex-memory.md"
     pkgshare.install ".claude/commands/sibyl-record.md" => "claude-slash-sibyl-record.md"
@@ -30,6 +31,7 @@ class Sibyl < Formula
 
         3. 動作確認:
              sibyl-record "今日やったこと..."
+             sib --version
 
       → 以後 Claude Code / Codex で「Sibyl に記録」「checkout」等で自動起動。
     EOS
@@ -39,5 +41,7 @@ class Sibyl < Formula
     assert_predicate bin/"sibyl-record", :executable?
     assert_predicate bin/"sibyl-log-session", :executable?
     assert_predicate bin/"sibyl-install", :executable?
+    assert_predicate bin/"sib", :executable?
+    assert_match "0.1.0", shell_output("#{bin}/sib --version")
   end
 end
