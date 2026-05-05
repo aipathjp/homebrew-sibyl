@@ -1,10 +1,10 @@
 class Sibyl < Formula
   desc "Sibyl: AI-Path 株式会社の AI セッション記録 + Claude Code/Codex 自然言語起動 + sib CLI"
   homepage "https://github.com/aipathjp/aipsibyl"
-  url "https://github.com/aipathjp/sibyl-dist/releases/download/v0.3.2/sibyl-0.3.2.tar.gz"
-  sha256 "510a3a5adb1ec21265bee1de79edd5cc4c410ceafd6a1af11765589357afa61f"
+  url "https://github.com/aipathjp/sibyl-dist/releases/download/v0.3.3/sibyl-0.3.3.tar.gz"
+  sha256 "f938b6d0048a5516e887a576d9da939662014ad4936500090ded522e2f9538da"
   license "Proprietary"
-  version "0.3.2"
+  version "0.3.3"
 
   depends_on "python@3.12"
 
@@ -42,6 +42,6 @@ class Sibyl < Formula
     assert_predicate bin/"sibyl-log-session", :executable?
     assert_predicate bin/"sibyl-install", :executable?
     assert_predicate bin/"sib", :executable?
-    assert_match "0.3.2", shell_output("#{bin}/sib --version")
+    assert_match "0.3.3", shell_output("#{bin}/sib --version")
   end
 end
