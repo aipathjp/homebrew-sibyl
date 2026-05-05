@@ -1,10 +1,10 @@
 class Sibyl < Formula
   desc "Sibyl: AI-Path 株式会社の AI セッション記録 + Claude Code/Codex 自然言語起動"
   homepage "https://github.com/aipathjp/aipsibyl"
-  url "https://github.com/aipathjp/sibyl-dist/releases/download/v0.1.1/sibyl-0.1.1.tar.gz"
-  sha256 "adc7c0a53a22cc5e45a327a538a6fb52ca3fd04b3b48f49c6d87f95091bea065"
+  url "https://github.com/aipathjp/sibyl-dist/releases/download/v0.1.2/sibyl-0.1.2.tar.gz"
+  sha256 "8da1a126be2a39ec05f475ad6302445c8738955d12748c245185f0a3f38371d5"
   license "Proprietary"
-  version "0.1.1"
+  version "0.1.2"
 
   depends_on "python@3.12"
 
@@ -18,52 +18,26 @@ class Sibyl < Formula
     pkgshare.install "AGENTS.md"
   end
 
-  def post_install
-    [
-      "#{Dir.home}/.claude/skills/sibyl-record",
-      "#{Dir.home}/.claude/commands",
-      "#{Dir.home}/.codex/memories",
-    ].each do |d|
-      begin
-        FileUtils.mkdir_p(d)
-      rescue StandardError => e
-        ohai "skip mkdir #{d}: #{e.message}"
-      end
-    end
-
-    pairs = [
-      ["#{pkgshare}/SKILL.md",                       "#{Dir.home}/.claude/skills/sibyl-record/SKILL.md"],
-      ["#{pkgshare}/claude-slash-sibyl-record.md",   "#{Dir.home}/.claude/commands/sibyl-record.md"],
-      ["#{pkgshare}/codex-memory.md",                "#{Dir.home}/.codex/memories/sibyl_record.md"],
-    ]
-    pairs.each do |src, dst|
-      begin
-        FileUtils.rm_f(dst)
-        File.symlink(src, dst) if File.exist?(src)
-        ohai "linked #{dst} -> #{src}"
-      rescue StandardError => e
-        ohai "skip link #{dst}: #{e.message}"
-      end
-    end
-  end
-
   def caveats
     <<~EOS
-      Sibyl のセットアップを完了するには ~/.zshrc に追記:
-        export SIBYL_USER_EMAIL="<your-name>@ai-path.jp"
+      Sibyl のセットアップ (brew install 後に 1 度だけ):
 
-      動作確認:
-        sibyl-record "今日やったこと..."
+        1. ~/.zshrc に追記:
+             export SIBYL_USER_EMAIL="<your-name>@ai-path.jp"
 
-      Claude Code / Codex は「Sibyl に記録」「checkout」等のフレーズで自動起動します。
+        2. 自然言語起動 (Claude Code skill / slash + Codex memory) を有効化:
+             SIBYL_BREW_SHARE=#{HOMEBREW_PREFIX}/share/sibyl sibyl-install
 
-      自然言語起動の symlink が反映されない場合は手動で再実行:
-        brew postinstall sibyl
+        3. 動作確認:
+             sibyl-record "今日やったこと..."
+
+      → 以後 Claude Code / Codex で「Sibyl に記録」「checkout」等で自動起動。
     EOS
   end
 
   test do
     assert_predicate bin/"sibyl-record", :executable?
     assert_predicate bin/"sibyl-log-session", :executable?
+    assert_predicate bin/"sibyl-install", :executable?
   end
 end
