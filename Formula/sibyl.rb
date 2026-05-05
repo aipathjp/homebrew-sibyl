@@ -1,10 +1,10 @@
 class Sibyl < Formula
   desc "Sibyl: AI-Path 株式会社の AI セッション記録 + Claude Code/Codex 自然言語起動"
   homepage "https://github.com/aipathjp/aipsibyl"
-  url "https://github.com/aipathjp/sibyl-dist/releases/download/v0.1.2/sibyl-0.1.2.tar.gz"
-  sha256 "8da1a126be2a39ec05f475ad6302445c8738955d12748c245185f0a3f38371d5"
+  url "https://github.com/aipathjp/sibyl-dist/releases/download/v0.1.3/sibyl-0.1.3.tar.gz"
+  sha256 "3632e47570ff70e1928c92a8eded2957231ba6f02bfa606dc49eaf5f7d5a7a27"
   license "Proprietary"
-  version "0.1.2"
+  version "0.1.3"
 
   depends_on "python@3.12"
 
