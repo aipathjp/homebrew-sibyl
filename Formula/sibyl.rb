@@ -1,10 +1,10 @@
 class Sibyl < Formula
   desc "Sibyl: AI-Path 株式会社の AI セッション記録 + Claude Code/Codex 自然言語起動"
   homepage "https://github.com/aipathjp/aipsibyl"
-  url "https://github.com/aipathjp/sibyl-dist/releases/download/v0.1.0/sibyl-0.1.0.tar.gz"
-  sha256 "4f823e6b9415ef8ff2b83d0d8480d345e9bb5622f1121cff9133afb4987397ca"
+  url "https://github.com/aipathjp/sibyl-dist/releases/download/v0.1.1/sibyl-0.1.1.tar.gz"
+  sha256 "adc7c0a53a22cc5e45a327a538a6fb52ca3fd04b3b48f49c6d87f95091bea065"
   license "Proprietary"
-  version "0.1.0"
+  version "0.1.1"
 
   depends_on "python@3.12"
 
@@ -23,15 +23,27 @@ class Sibyl < Formula
       "#{Dir.home}/.claude/skills/sibyl-record",
       "#{Dir.home}/.claude/commands",
       "#{Dir.home}/.codex/memories",
-    ].each { |d| FileUtils.mkdir_p(d) }
+    ].each do |d|
+      begin
+        FileUtils.mkdir_p(d)
+      rescue StandardError => e
+        ohai "skip mkdir #{d}: #{e.message}"
+      end
+    end
+
     pairs = [
       ["#{pkgshare}/SKILL.md",                       "#{Dir.home}/.claude/skills/sibyl-record/SKILL.md"],
       ["#{pkgshare}/claude-slash-sibyl-record.md",   "#{Dir.home}/.claude/commands/sibyl-record.md"],
       ["#{pkgshare}/codex-memory.md",                "#{Dir.home}/.codex/memories/sibyl_record.md"],
     ]
     pairs.each do |src, dst|
-      FileUtils.rm_f(dst) if File.exist?(dst) || File.symlink?(dst)
-      File.symlink(src, dst)
+      begin
+        FileUtils.rm_f(dst)
+        File.symlink(src, dst) if File.exist?(src)
+        ohai "linked #{dst} -> #{src}"
+      rescue StandardError => e
+        ohai "skip link #{dst}: #{e.message}"
+      end
     end
   end
 
@@ -44,6 +56,9 @@ class Sibyl < Formula
         sibyl-record "今日やったこと..."
 
       Claude Code / Codex は「Sibyl に記録」「checkout」等のフレーズで自動起動します。
+
+      自然言語起動の symlink が反映されない場合は手動で再実行:
+        brew postinstall sibyl
     EOS
   end
 
