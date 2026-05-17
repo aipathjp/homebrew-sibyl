@@ -27,26 +27,26 @@ class Sibyl < Formula
   desc "Sibyl: AI-Path 株式会社の AI セッション記録 + transcript 統合 CLI"
   homepage "https://github.com/aipathjp/aipsibyl"
   license "Proprietary"
-  version "0.4.3"
+  version "0.4.4"
 
   on_macos do
     on_arm do
-      url "https://github.com/aipathjp/sibyl-dist/releases/download/v0.4.3/sibyl-0.4.3-darwin-arm64.tar.gz"
-      sha256 "471228da7b5e37b411ee683ed8c3e7f81b44639ec0ae6b223899d781abef7e4f"
+      url "https://github.com/aipathjp/sibyl-dist/releases/download/v0.4.4/sibyl-0.4.4-darwin-arm64.tar.gz"
+      sha256 "a022658e0f3b4900aa95f00205a97145db21c0a03d465fc4b4b8ff18a2f41b9e"
     end
     on_intel do
-      url "https://github.com/aipathjp/sibyl-dist/releases/download/v0.4.3/sibyl-0.4.3-darwin-x64.tar.gz"
-      sha256 "a9e15ef1845e16f85c286b32089c79cf8065a92ad5a7a3acdbd8c3727f5745fd"
+      url "https://github.com/aipathjp/sibyl-dist/releases/download/v0.4.4/sibyl-0.4.4-darwin-x64.tar.gz"
+      sha256 "8ff9b8ed4c33abb994acb70032144849c6c3aa33be1e2095f1cf8379bfc5b30c"
     end
   end
   on_linux do
     on_arm do
-      url "https://github.com/aipathjp/sibyl-dist/releases/download/v0.4.3/sibyl-0.4.3-linux-arm64.tar.gz"
-      sha256 "387cd66f4135c954e76a0a7269e1c5ee7638cfbfa3b0a9719407f37f390096fe"
+      url "https://github.com/aipathjp/sibyl-dist/releases/download/v0.4.4/sibyl-0.4.4-linux-arm64.tar.gz"
+      sha256 "018c0e9e6d81002d79b21d0924833e707184832dbc13c5c38f4b8eff1a6a6d79"
     end
     on_intel do
-      url "https://github.com/aipathjp/sibyl-dist/releases/download/v0.4.3/sibyl-0.4.3-linux-x64.tar.gz"
-      sha256 "99e77343fb1b2dd91b6bf9f9da2228da8690929c03053c07f096dee1f5aa3a76"
+      url "https://github.com/aipathjp/sibyl-dist/releases/download/v0.4.4/sibyl-0.4.4-linux-x64.tar.gz"
+      sha256 "8acae083c48fa70f76ed0ad71db2a5403060d3202caa65e7ed8992bbe0a6edd2"
     end
   end
 
@@ -61,36 +61,22 @@ class Sibyl < Formula
     pkgshare.install "AGENTS.md" if File.exist?("AGENTS.md")
   end
 
-  def post_install
-    # v0.4.1: 旧 v0.3.x が残した /sibyl-record slash command symlink を silently 削除。
-    # skill が `/sibyl-record` として自動登録されるので、同名 slash command file は不要。
-    legacy_slash = "#{Dir.home}/.claude/commands/sibyl-record.md"
-    FileUtils.rm_f(legacy_slash) if File.exist?(legacy_slash) || File.symlink?(legacy_slash)
+  # v0.4.4: post_install は廃止。Homebrew sandbox が ~/.claude/skills/<新規ディレクトリ>
+  # への mkdir を block するため、symlink 作成は brew sandbox 外の `sibyl-install --skills`
+  # に委譲する。caveats で実行を促す。
 
-    # v0.4.3: 全 sibyl-* skill を ~/.claude/skills/<name>/ に symlink。
-    # 既存ファイル/symlink は強制上書き (常に tap の最新を指す)。
-    skills_root = "#{pkgshare}/skills"
-    if File.directory?(skills_root)
-      Dir["#{skills_root}/sibyl-*"].each do |skill_dir|
-        next unless File.directory?(skill_dir)
-        skill_name = File.basename(skill_dir)
-        dest_dir = "#{Dir.home}/.claude/skills/#{skill_name}"
-        FileUtils.mkdir_p(dest_dir)
-        Dir["#{skill_dir}/*.md"].each do |src|
-          dest = "#{dest_dir}/#{File.basename(src)}"
-          FileUtils.rm_f(dest)
-          FileUtils.ln_s(src, dest)
-        end
-      end
-    end
+  def caveats
+    <<~EOS
+      sibyl-record (Bash) と sib (Bun) は brew で配備済。
+      全 sibyl-* skill (record / bootstrap / checkout / log-session / sync /
+      sync-harness / sync-user-env / analyze) を ~/.claude/skills/ に有効化するには:
 
-    # codex memory (sibyl-record/codex-memory.md → ~/.codex/memory/sibyl-record.md)
-    FileUtils.mkdir_p("#{Dir.home}/.codex/memory")
-    codex_src = "#{pkgshare}/skills/sibyl-record/codex-memory.md"
-    if File.exist?(codex_src)
-      FileUtils.rm_f("#{Dir.home}/.codex/memory/sibyl-record.md")
-      FileUtils.ln_s(codex_src, "#{Dir.home}/.codex/memory/sibyl-record.md")
-    end
+        SIBYL_BREW_SHARE=#{HOMEBREW_PREFIX}/share/sibyl sibyl-install --skills
+
+      これで Claude Code から /sibyl-bootstrap などが Skill ツール経由で呼べる。
+      (Homebrew 5.x の post_install サンドボックスは $HOME/.claude/ への mkdir を block
+       するため、別コマンドに分離している。SIBYL_BREW_SHARE は brew install パス情報。)
+    EOS
   end
 
   test do
