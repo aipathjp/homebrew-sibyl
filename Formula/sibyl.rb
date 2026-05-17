@@ -32,21 +32,21 @@ class Sibyl < Formula
   on_macos do
     on_arm do
       url "https://github.com/aipathjp/sibyl-dist/releases/download/v0.4.3/sibyl-0.4.3-darwin-arm64.tar.gz"
-      sha256 "a8ac5b3ff84854dbf360fef84d0838b8be351ddb17f84d8908c4f9ce989f8d73"
+      sha256 "471228da7b5e37b411ee683ed8c3e7f81b44639ec0ae6b223899d781abef7e4f"
     end
     on_intel do
       url "https://github.com/aipathjp/sibyl-dist/releases/download/v0.4.3/sibyl-0.4.3-darwin-x64.tar.gz"
-      sha256 "e4fce4cd77b6d7e3cc7d8bf05335756b8d99ad7671bc0fafd9629ef9b78f5639"
+      sha256 "a9e15ef1845e16f85c286b32089c79cf8065a92ad5a7a3acdbd8c3727f5745fd"
     end
   end
   on_linux do
     on_arm do
       url "https://github.com/aipathjp/sibyl-dist/releases/download/v0.4.3/sibyl-0.4.3-linux-arm64.tar.gz"
-      sha256 "501432a43cb3be36495617b71cf2349bb21968398a346dc34ea849a9c795e930"
+      sha256 "387cd66f4135c954e76a0a7269e1c5ee7638cfbfa3b0a9719407f37f390096fe"
     end
     on_intel do
       url "https://github.com/aipathjp/sibyl-dist/releases/download/v0.4.3/sibyl-0.4.3-linux-x64.tar.gz"
-      sha256 "53ebd1d861e70ad86bc062dce479f5c816e92b30810879c4fa6cb744375b5197"
+      sha256 "99e77343fb1b2dd91b6bf9f9da2228da8690929c03053c07f096dee1f5aa3a76"
     end
   end
 
