@@ -5,7 +5,9 @@
 # 配布対象:
 #   - bin/sib                          (bun-compile Mach-O / ELF、各 arch ビルド)
 #   - bin/sibyl-record / sibyl-log-session / sibyl-install
+#   - bin/sibyl-bootstrap / sibyl-intake / sibyl-checkout (multi-agent wrapper)
 #   - skills/sibyl-record/{SKILL.md, codex-memory.md}
+#   - codex-plugin/sibyl/{.codex-plugin/plugin.json,commands/*.md}
 #   - AGENTS.md
 #
 # 注意: 旧 v0.3.x までは `.claude/commands/sibyl-record.md` (slash command) も配布していたが、
@@ -18,7 +20,7 @@
 #
 # 運用 (sib release コマンドが自動化):
 #   1. cli/ で `bun build --compile --target=bun-darwin-arm64 --outfile dist/sib`
-#   2. tarball に bin / skills を集約
+#   2. tarball に bin / skills / codex-plugin を集約
 #   3. shasum -a 256 で sha256 計算
 #   4. gh release create v<VERSION> --repo aipathjp/sibyl-dist tarball
 #   5. この Formula の url / sha256 / version を gh pr で aipathjp/homebrew-sibyl に更新
@@ -27,26 +29,26 @@ class Sibyl < Formula
   desc "Sibyl: AI-Path 株式会社の AI セッション記録 + transcript 統合 CLI"
   homepage "https://github.com/aipathjp/aipsibyl"
   license "Proprietary"
-  version "0.6.0"
+  version "0.6.1"
 
   on_macos do
     on_arm do
-      url "https://github.com/aipathjp/sibyl-dist/releases/download/v0.6.0/sibyl-0.6.0-darwin-arm64.tar.gz"
-      sha256 "4e3bf68302f9819439415869ffa6a96e4a13b45bf0143c9231ac7de2855bb27b"
+      url "https://github.com/aipathjp/sibyl-dist/releases/download/v0.6.1/sibyl-0.6.1-darwin-arm64.tar.gz"
+      sha256 "cc40e8cda8462ec7b766e06d36935031166688b769f9d14eb653ea4252c547b8"
     end
     on_intel do
-      url "https://github.com/aipathjp/sibyl-dist/releases/download/v0.6.0/sibyl-0.6.0-darwin-x64.tar.gz"
-      sha256 "24c524099b892ea7c28e0634e42946123912fb08bb402b8b4d6d950adb3ea835"
+      url "https://github.com/aipathjp/sibyl-dist/releases/download/v0.6.1/sibyl-0.6.1-darwin-x64.tar.gz"
+      sha256 "7741102da74a66fdcbc551f0160031f7d6caa272439a6e2217ce040bd67aa2eb"
     end
   end
   on_linux do
     on_arm do
-      url "https://github.com/aipathjp/sibyl-dist/releases/download/v0.6.0/sibyl-0.6.0-linux-arm64.tar.gz"
-      sha256 "e28aaecf66ab3b0826faaa6e18a1296f32ac08e142aa7cfe77f1bb111cff6a22"
+      url "https://github.com/aipathjp/sibyl-dist/releases/download/v0.6.1/sibyl-0.6.1-linux-arm64.tar.gz"
+      sha256 "ebb564577e32ebb88b8f41c49f6c4fc3d6fabe2c0dddca405129e19e478331ac"
     end
     on_intel do
-      url "https://github.com/aipathjp/sibyl-dist/releases/download/v0.6.0/sibyl-0.6.0-linux-x64.tar.gz"
-      sha256 "2b753a7a1c736ceedb05753a1dde550fcb969fe86097d629c3825488484a6812"
+      url "https://github.com/aipathjp/sibyl-dist/releases/download/v0.6.1/sibyl-0.6.1-linux-x64.tar.gz"
+      sha256 "2b79314296b4e6ec51ff236859dcd60299a3251f588dc748e652ce447f2bdb8e"
     end
   end
 
@@ -55,10 +57,46 @@ class Sibyl < Formula
     bin.install "bin/sibyl-record"
     bin.install "bin/sibyl-log-session"
     bin.install "bin/sibyl-install"
+    install_or_generate_wrapper "sibyl-bootstrap", "bootstrap"
+    install_or_generate_wrapper "sibyl-intake", "intake"
+    install_or_generate_wrapper "sibyl-checkout", "checkout"
     # v0.4.3 以降: sibyl-record / bootstrap / checkout / log-session / sync / sync-harness /
     # sync-user-env / analyze の全 skill を配布対象に。tarball の skills/ 全体を install。
     pkgshare.install "skills" if File.exist?("skills")
+    pkgshare.install "codex-plugin" if File.exist?("codex-plugin")
     pkgshare.install "AGENTS.md" if File.exist?("AGENTS.md")
+  end
+
+  def install_or_generate_wrapper(name, subcommand)
+    source = "bin/#{name}"
+    if File.exist?(source)
+      bin.install source
+      return
+    end
+
+    (bin/name).write <<~EOS
+      #!/usr/bin/env bash
+      set -euo pipefail
+      args=("$@")
+      if [[ "#{subcommand}" == "bootstrap" || "#{subcommand}" == "intake" ]]; then
+        has_agent=0
+        for arg in "$@"; do
+          [[ "$arg" == "--agent" || "$arg" == --agent=* ]] && has_agent=1
+        done
+        if [[ "$has_agent" == "0" ]]; then
+          if [[ -n "${SIBYL_AGENT_TYPE:-}" && "${SIBYL_AGENT_TYPE:-}" != "auto" ]]; then agent="$SIBYL_AGENT_TYPE"
+          elif [[ -n "${CLAUDECODE:-}" ]]; then agent="claude_code"
+          elif [[ -n "${CURSOR_AGENT:-}" ]]; then agent="cursor"
+          elif [[ -n "${QWEN_HOME:-}" ]]; then agent="qwen3_coder"
+          elif [[ -n "${ANTIGRAVITY_HOME:-}" ]]; then agent="antigravity"
+          else agent="codex_cli"
+          fi
+          args=(--agent "$agent" "$@")
+        fi
+      fi
+      exec "#{bin}/sib" #{subcommand} "${args[@]}"
+    EOS
+    FileUtils.chmod 0755, bin/name
   end
 
   # v0.4.4: post_install は廃止。Homebrew sandbox が ~/.claude/skills/<新規ディレクトリ>
@@ -67,13 +105,20 @@ class Sibyl < Formula
 
   def caveats
     <<~EOS
-      sibyl-record (Bash) と sib (Bun) は brew で配備済。
+      sibyl-record (Bash), sibyl-bootstrap/intake/checkout wrapper, sib (Bun) は brew で配備済。
+      Codex CLI からは通常コマンドとして以下を実行できます:
+
+        sibyl-bootstrap --cwd "$PWD"
+        sibyl-intake --cwd "$PWD"
+
       全 sibyl-* skill (record / bootstrap / checkout / log-session / sync /
-      sync-harness / sync-user-env / analyze) を ~/.claude/skills/ に有効化するには:
+      sync-harness / sync-user-env / analyze) と Codex slash command plugin を
+      有効化するには:
 
         SIBYL_BREW_SHARE=#{HOMEBREW_PREFIX}/share/sibyl sibyl-install --skills
 
-      これで Claude Code から /sibyl-bootstrap などが Skill ツール経由で呼べる。
+      これで Claude Code / Codex から sibyl-bootstrap などを Skill として参照でき、
+      Codex の / メニューには /sibyl-bootstrap 等が追加されます。
       (Homebrew 5.x の post_install サンドボックスは $HOME/.claude/ への mkdir を block
        するため、別コマンドに分離している。SIBYL_BREW_SHARE は brew install パス情報。)
     EOS
@@ -82,5 +127,8 @@ class Sibyl < Formula
   test do
     assert_match(/\d+\.\d+\.\d+/, shell_output("#{bin}/sib --version"))
     assert_match("sibyl-record", shell_output("#{bin}/sibyl-record --help 2>&1", 1))
+    assert_path_exists bin/"sibyl-bootstrap"
+    assert_path_exists bin/"sibyl-intake"
+    assert_path_exists bin/"sibyl-checkout"
   end
 end
