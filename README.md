@@ -21,6 +21,10 @@ curl -sSL https://raw.githubusercontent.com/aipathjp/homebrew-sibyl/main/install
 5. `SIBYL_USER_EMAIL` を `~/.zshrc` に登録 (`gh` / `git config` で自動検出、無ければ tty から入力)
 6. `sib --version` で動作確認
 
+## Windows で使う (WSL)
+
+Windows では WSL2 (Ubuntu) の中に Linux 版を入れて使います。手順は [docs/windows-wsl-setup.md](docs/windows-wsl-setup.md) を参照してください。
+
 ## 手動でやる場合
 
 ```
