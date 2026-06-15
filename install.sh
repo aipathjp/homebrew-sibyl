@@ -98,6 +98,20 @@ else
   brew tap aipathjp/sibyl
 fi
 
+# ---- 2.5 trust (Homebrew 6.x の tap-trust ゲート対策) ------------------------
+# Homebrew 6.x 以降は HOMEBREW_REQUIRE_TAP_TRUST が既定有効になり、
+# サードパーティ tap を明示 trust しないと
+#   "Warning: Skipping aipathjp/sibyl because it is not trusted."
+#   "Error: Refusing to load formula aipathjp/sibyl/sibyl from untrusted tap"
+# で install が止まる。これはクライアント側 (~/.homebrew/trust.json) の
+# セキュリティ機構で tap リポ側では解除できないため、ここで自動 trust する。
+# - `brew trust` を持たない旧 Homebrew では skip
+# - 既に trust 済みだと exit 1 ("Already trusted") を返すので || true で握る
+if brew help trust >/dev/null 2>&1; then
+  echo "▶ brew trust aipathjp/sibyl"
+  brew trust aipathjp/sibyl 2>/dev/null || true
+fi
+
 # ---- 3. install (or reinstall to latest) -------------------------------------
 if brew list sibyl >/dev/null 2>&1; then
   echo "▶ brew upgrade sibyl"
@@ -170,6 +184,13 @@ if command -v sib >/dev/null 2>&1; then
 else
   echo "$(yellow '⚠') sib が PATH に無い。新シェルを開くか source $RC_FILE してください"
 fi
+for cmd in sibyl-bootstrap sibyl-intake sibyl-checkout; do
+  if command -v "$cmd" >/dev/null 2>&1; then
+    echo "$(green '✓') $cmd: $(command -v "$cmd")"
+  else
+    echo "$(yellow '⚠') $cmd が PATH に無い。brew upgrade sibyl を実行し、$(brew --prefix)/bin が PATH にあるか確認してください"
+  fi
+done
 
 echo
 echo "$(bold 'セットアップ完了')"
@@ -177,6 +198,7 @@ echo
 echo "  次にやること:"
 echo "    1) $(bold 'sib login')    # Google Workspace SSO で認証 (@ai-path.jp 限定)"
 echo "    2) $(bold 'sib status')   # 認証状態と workstation 情報を確認"
+echo "    3) $(bold 'sibyl-bootstrap --cwd \"$PWD\"')"
 echo
 echo "  自然言語起動 (Claude Code / Codex):"
 echo "    「Sibyl に記録」「checkout」「セッションを残す」等で自動発火"
