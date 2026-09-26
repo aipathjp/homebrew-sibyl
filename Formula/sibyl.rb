@@ -54,6 +54,10 @@ class Sibyl < Formula
 
   def install
     bin.install "bin/sib"            # 主力バイナリ (Phase 7)
+    # bun --compile の darwin バイナリは埋め込み後に linker 署名が壊れた状態で出てくる
+    # (codesign -v: invalid signature)。Homebrew は以前は install 時に ad-hoc 署名を
+    # 付け直していたが、現行版は付け直さないため、そのままだと起動時に SIGKILL (exit 137) になる。
+    system "codesign", "--force", "--sign", "-", bin/"sib" if OS.mac?
     bin.install "bin/sibyl-record"
     bin.install "bin/sibyl-log-session"
     bin.install "bin/sibyl-install"
