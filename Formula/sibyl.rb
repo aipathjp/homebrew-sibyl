@@ -29,26 +29,26 @@ class Sibyl < Formula
   desc "Sibyl: AI-Path 株式会社の AI セッション記録 + transcript 統合 CLI"
   homepage "https://github.com/aipathjp/aipsibyl"
   license "Proprietary"
-  version "0.7.33"
+  version "0.7.34"
 
   on_macos do
     on_arm do
-      url "https://github.com/aipathjp/sibyl-dist/releases/download/v0.7.33/sibyl-0.7.33-darwin-arm64.tar.gz"
-      sha256 "445c56db9409cfe11a32950ba6f96836d092cb54b5f52520b0f9f0e507917a67"
+      url "https://github.com/aipathjp/sibyl-dist/releases/download/v0.7.34/sibyl-0.7.34-darwin-arm64.tar.gz"
+      sha256 "8216a7ddba904ef6a70e5cf9a0aa55909e7c14508945069202ea21a5e15fe403"
     end
     on_intel do
-      url "https://github.com/aipathjp/sibyl-dist/releases/download/v0.7.33/sibyl-0.7.33-darwin-x64.tar.gz"
-      sha256 "96bbc82329d7deda7bcb6c447acd6b204f0d55a3d884f7a7747f47375da6e3a3"
+      url "https://github.com/aipathjp/sibyl-dist/releases/download/v0.7.34/sibyl-0.7.34-darwin-x64.tar.gz"
+      sha256 "e728396af5d06c5e9b7b934784158b3bf953d80db03246db3bed7b0213f65759"
     end
   end
   on_linux do
     on_arm do
-      url "https://github.com/aipathjp/sibyl-dist/releases/download/v0.7.33/sibyl-0.7.33-linux-arm64.tar.gz"
-      sha256 "b70310b4ce6f869adc892923725731519d32301a725df8160924bfb2d569afa6"
+      url "https://github.com/aipathjp/sibyl-dist/releases/download/v0.7.34/sibyl-0.7.34-linux-arm64.tar.gz"
+      sha256 "bf9489e36d343d3898b167a6a4dfdb667a4dc2d99b3f35d2f386e2bdcba6c1c1"
     end
     on_intel do
-      url "https://github.com/aipathjp/sibyl-dist/releases/download/v0.7.33/sibyl-0.7.33-linux-x64.tar.gz"
-      sha256 "787b249227cc45ed8a0f7b36d639afd3238b070fb6f97e7d1a844af604c6ff6c"
+      url "https://github.com/aipathjp/sibyl-dist/releases/download/v0.7.34/sibyl-0.7.34-linux-x64.tar.gz"
+      sha256 "b9dbb7468b6788d5622ae89c6ddac8cefd35dea66dde44fea948fe830ca9763d"
     end
   end
 
