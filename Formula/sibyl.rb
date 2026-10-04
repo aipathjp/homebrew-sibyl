@@ -29,26 +29,26 @@ class Sibyl < Formula
   desc "Sibyl: AI-Path 株式会社の AI セッション記録 + transcript 統合 CLI"
   homepage "https://github.com/aipathjp/aipsibyl"
   license "Proprietary"
-  version "0.7.39"
+  version "0.7.40"
 
   on_macos do
     on_arm do
-      url "https://github.com/aipathjp/sibyl-dist/releases/download/v0.7.39/sibyl-0.7.39-darwin-arm64.tar.gz"
-      sha256 "adb281070ca59ffb6818a3b4020e1d37c4ad63f240c1cf9edeb23678336e1891"
+      url "https://github.com/aipathjp/sibyl-dist/releases/download/v0.7.40/sibyl-0.7.40-darwin-arm64.tar.gz"
+      sha256 "34bbb2aff797960a7e0c50531d922a2e5b2645e5bb779aae02cc114fd039c100"
     end
     on_intel do
-      url "https://github.com/aipathjp/sibyl-dist/releases/download/v0.7.39/sibyl-0.7.39-darwin-x64.tar.gz"
-      sha256 "50e871d384321fc30af0edd23d6f60fbf18c58079e590b86822f359d29ac2d1d"
+      url "https://github.com/aipathjp/sibyl-dist/releases/download/v0.7.40/sibyl-0.7.40-darwin-x64.tar.gz"
+      sha256 "932f8fb60b85c5b7425163745b98757a7a22b49888b2a98fe1614d800fdd5970"
     end
   end
   on_linux do
     on_arm do
-      url "https://github.com/aipathjp/sibyl-dist/releases/download/v0.7.39/sibyl-0.7.39-linux-arm64.tar.gz"
-      sha256 "d57e334cad40a1e0067635b97d036907c071a0eba67f51ef816b0868fe222ff7"
+      url "https://github.com/aipathjp/sibyl-dist/releases/download/v0.7.40/sibyl-0.7.40-linux-arm64.tar.gz"
+      sha256 "687f159c5c76359ef47feaea0d8021031f1e0cc26c43785ddb787bbc7dfb18c4"
     end
     on_intel do
-      url "https://github.com/aipathjp/sibyl-dist/releases/download/v0.7.39/sibyl-0.7.39-linux-x64.tar.gz"
-      sha256 "69b459e129d9a194502f0bb515c7a3326e748991ace7ad2d3a33780391085eeb"
+      url "https://github.com/aipathjp/sibyl-dist/releases/download/v0.7.40/sibyl-0.7.40-linux-x64.tar.gz"
+      sha256 "6d269a8189810cdceaa3c361e451f9f2ef8e10f5f7743c95db13fd3977e62fcd"
     end
   end
 
@@ -64,8 +64,9 @@ class Sibyl < Formula
     install_or_generate_wrapper "sibyl-bootstrap", "bootstrap"
     install_or_generate_wrapper "sibyl-intake", "intake"
     install_or_generate_wrapper "sibyl-checkout", "checkout"
-    # v0.4.3 以降: sibyl-record / bootstrap / checkout / log-session / sync / sync-harness /
-    # sync-user-env / analyze の全 skill を配布対象に。tarball の skills/ 全体を install。
+    # v0.4.3 以降: bootstrap / checkout / log-session / sync / sync-harness / sync-user-env /
+    # analyze 等の全 skill を配布対象に。tarball の skills/ 全体を install。
+    # (v0.7.40: sibyl-record skill は sibyl-checkout に統合。bin/sibyl-record は checkout の別名として残す)
     pkgshare.install "skills" if File.exist?("skills")
     pkgshare.install "codex-plugin" if File.exist?("codex-plugin")
     pkgshare.install "AGENTS.md" if File.exist?("AGENTS.md")
